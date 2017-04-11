@@ -1,1 +1,2 @@
-# project-2
+# project-2: Full stack node app
+
