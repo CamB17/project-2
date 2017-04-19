@@ -8,3 +8,5 @@ Started building server&testing framework and investigating APIs.  Beginning wor
 ## 4/18/2017
 Building out server and serving up front end structual elements and partials.  MEAN stack (- the Angular).  Serving up partials with express and ejs to a bootstrap/jquery front end.  
 
+## 4/19/2017
+Added a bit of flare to bootstrap model and got passport working, norminally.  Trying to avoid using npm-flash in order to work on redirects.

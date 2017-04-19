@@ -9,8 +9,8 @@ function postLogin (request, response, next){
 	//console.log('request: ' + request.body);
 	var loginStrategy = passport.authenticate('local-login', {
 		successRedirect: '/',
-		failureRedirect: '/',
-		failure: true
+		failureRedirect: '/failed',
+		//failure: true
 	});
 
 	return loginStrategy(request, response, next);
@@ -24,8 +24,8 @@ function postSignup (request, response, next){
 	
 	var signupStrategy = passport.authenticate('local-signup', {
 		successRedirect: '/',
-		failureRedirect: '/',
-		failure: true
+		failureRedirect: '/failed',
+		//failure: true
 	});
 	return signupStrategy(request, response, next);
 }
@@ -33,7 +33,10 @@ function postSignup (request, response, next){
 function getLogout (request, response){
 	request.logout();
   	response.redirect('/');
+}
 
+function getFailed (request, response){
+	response.render('indexFailed');
 }
 
 
@@ -43,5 +46,6 @@ module.exports = {
   postLogin: postLogin ,
   getSignup: getSignup,
   postSignup: postSignup,
-  getLogout: getLogout
+  getLogout: getLogout,
+  getFailed: getFailed
 };

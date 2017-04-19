@@ -1,0 +1,11 @@
+.modal-dialog .modal-content .modal-header{
+	margin:0 auto;
+}
+
+.modal-dialog .modal-content #signUp{
+	background-color: #EC9715;
+}
+
+.modal-dialog .modal-content .modal-body {
+	text-align: center;
+}

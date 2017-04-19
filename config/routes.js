@@ -40,5 +40,8 @@ router.route('/signup')
 router.route('/logout')
 	.get(usersController.getLogout);
 
+router.route('/failed')
+	.get(usersController.getFailed);
+
 
 module.exports = router;

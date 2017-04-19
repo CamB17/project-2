@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 //SET UP MONGOOSE (not tested)
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/local-authentication-with-passport'); 
+mongoose.connect('mongodb://localhost/HOTTSPOT'); 
 
 //set up EJS (√)
 app.engine('ejs', require('ejs').renderFile);
