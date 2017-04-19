@@ -9,12 +9,22 @@
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="#">[IMG]</a>
+      <p>      
+        <% if (currentUser) {%>
+            Hello, <%=currentUser.local.username%>
+        <% } %>
+      
+     </p>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-      	<li><a href="#">Login</a></li>
+      	<li>
+          <% if (currentUser) {%>
+              <a href= '/logout'> Logout </a>
+          <% } %>
+        </li>
      
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Options <span class="caret"></span></a>

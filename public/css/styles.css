@@ -5,6 +5,13 @@
 .navbar {
 	margin-bottom: 0;
 	border-radius: 0;
+	text-align: center;
+}
+
+.navbar p {
+	margin-top: 15px;
+	color: #ec971f;
+	display: inline-block;
 }
 
 .centered {
