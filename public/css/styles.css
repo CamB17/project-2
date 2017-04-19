@@ -1,0 +1,33 @@
+.container-fluid {
+	padding: 0;
+}
+
+.navbar {
+	margin-bottom: 0;
+	border-radius: 0;
+}
+
+.centered {
+	text-align: center;
+	width: 100%;
+}
+
+.titleBlock {
+	background-image: url('../images/hotspot.jpg');
+	background-size: cover;
+	background-position: 50% 90%;
+}
+
+.jumbotron {
+	background-color : transparent;
+}
+
+.page-header{
+	padding:0;
+}
+
+.bodyBlock {
+	background-color: black;
+}
+.row {
+  margin: 30px 0; }
