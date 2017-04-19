@@ -15,8 +15,13 @@
 }
 
 .navbar-brand{
-	padding:3px;
-	margin: 0 auto;
+	padding:0;
+}
+
+.navbar-header .navbar-brand>img{
+	height: 100%;
+	width: auto;
+	padding: 0 auto;
 }
 
 .navbar-brand>img{
