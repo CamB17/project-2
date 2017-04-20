@@ -3,7 +3,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     passport = require("passport");
 
-var testController = require('../Controllers/mainController');
+var mainController = require('../Controllers/mainController');
 var usersController = require('../Controllers/usersController');
 
 
@@ -19,10 +19,20 @@ function authenticatedUser(req, res, next) {
 
 //set routes (√)
 
-//homepage
+//landingpage
 router.route('/')
-	.get(testController.landingPage);
+	.get(mainController.landingPage);
 
+router.route('/home')
+	.get(authenticatedUser, mainController.homePage);
+
+router.route('/home/getUser')
+	.get(usersController.userInfo);
+
+router.route('/home/location/:username')
+	.post(usersController.addUserLocation);
+router.route('/home/routes/:username')
+	.get(usersController.addUserRoutes);
 //location
 //router.route('/location')
 	//.post(testController.getAirport);

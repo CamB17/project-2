@@ -1,8 +1,7 @@
 $(document).ready(function(){
-	console.log('app is loaded');
 	
 	//get location on button click
-	$('#Go').on('click', function(){
+	$('#Login').on('click', function(){
 		$('#loginModal').modal();
 		// $.get("http://ipinfo.io", function(response) {
 	    		
@@ -44,6 +43,22 @@ $(document).ready(function(){
   //     "CountryName": "United States"
   //   }
   // ]
+
+  	//get current username
+  	$.get('/home/getUser', function(response){
+  		var username = response.username;
+  		//save location to user
+  		$.post('/home/location/' + username, ipInfo, function(response){
+  			//console.log(response.city);//Denver
+
+  			//get server to request routes and save to user
+  			$.get('/home/routes/' + username, function(response){
+
+  			});
+  		});
+  	});
+
+
 
 
 	});//end click
