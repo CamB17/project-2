@@ -57,6 +57,15 @@ function addUserLocation(request, response, next){
 		user.location.postal = request.body.postal;
 		user.location.loc = request.body.loc;
 		//console.log('2nd pass--- found this info for user: ' + user.location);
+
+
+		makeRequest("http://api.openweathermap.org/data/2.5/forecast/daily?zip="+user.location.postal+
+			","+user.location.country+"&units=imperial&cnt=10&appid="+apiKeys.owmAPI+'', function(err, response, body){
+				var weather = JSON.parse(body);
+				//console.log(weather);
+
+		});
+
 		user.save();
 		response.json(user.location);
 	});
@@ -84,44 +93,55 @@ function addUserRoutes(request, response, next){
 		 	var dates = makeDates();
 		 	console.log('NOT USING these generated dates: ' + dates[0] + ', ' + dates[1]);
 		 	console.log('using this generated ID: ' + user.skyscanner.PlaceId);
+		 	
 		 	makeRequest("http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/US/USD/en-US/"+ 
-		 		user.skyscanner.PlaceId + "/anywhere/" + '2017-04-28' + "/" + '2017-05-01' + "?apiKey=" + 
+		 		user.skyscanner.PlaceId + "/anywhere/" + '2017-04-29' + "/" + '2017-05-05' + "?apiKey=" + 
 		 		apiKeys.ssAPI + '' , function(err, response, body){
 		 			//ALL FLIGHT DATA FROM DENVER TO COUNTRIES
-		 			var flights = JSON.parse(body);
-		 				//console.log('resp: '+ flights.Places[0].Name); //√ works
-		 				//console.log('resp: '+ flights.Carriers[0].Name); //√ works
-		 				//console.log('quotes: '+ flights.Quotes[0].MinPrice); //√ works
-		 				
-		 			var templates =[];
+	 			var flights = JSON.parse(body);
+	 				//console.log('resp: '+ flights.Places[0].Name); //√ works
+	 				//console.log('resp: '+ flights.Carriers[0].Name); //√ works
+	 				//console.log('quotes: '+ flights.Quotes[0].MinPrice); //√ works
+	 				
+	 			var newRoutes =[];
 
-		 			console.log('number of quotes: ' + flights.Quotes.length);
-					flights.Quotes.forEach(function(quote) {
+	 			console.log('number of quotes: ' + flights.Quotes.length);
+				flights.Quotes.forEach(function(quote) {
 
-						var template = {
-						price : quote.MinPrice,
-						destination : quote.OutboundLeg.DestinationId,
-						inbound : quote.InboundLeg.DepartureDate,
-						direct : quote.Direct,
-						outbound : quote.OutboundLeg.DepartureDate,
-						};
+					var newRoute = {
+					price : quote.MinPrice,
+					destination : quote.OutboundLeg.DestinationId,
+					inbound : quote.InboundLeg.DepartureDate,
+					direct : quote.Direct,
+					outbound : quote.OutboundLeg.DepartureDate
+					//carrier???
+					};
 
-						templates.push(template);
+					newRoutes.push(newRoute);
+				});
+
+				//fill newRoutes with international routes
+				newRoutes.forEach(function(newRoute){
+					
+					flights.Places.forEach(function(place){
+						if (newRoute.destination === place.PlaceId){
+							newRoute.destination = place.Name;
+						}
 					});
 
-					templates.forEach(template => {
-						flights.Places.forEach(place => {
-							//console.log(place.PlaceId);
-							if (template.destination === place.PlaceId){
-								template.destination = place.Name;
-							}
-						});
-					});
 
-					//templates.forEach(template => {console.log(template.destination);}); 
+				//get weather for each destination
 
-		 	
-		 	});//end request for flight data
+
+
+					//add route to user
+					user.routes.push(newRoute);
+				});
+				user.save();
+				//templates.forEach(template => {console.log(template.destination);}); 
+		 		console.log(user.routes);
+		 	});//end request for international flight data
+
 		});//end request for sckyscanner Id names
 	});//end find user
 }//end route
