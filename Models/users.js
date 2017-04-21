@@ -24,6 +24,7 @@ var UserSchema = mongoose.Schema({
   },
   routes : [
     { 
+      countryCode: {type: String, default: 'goat'},
       destination: {type: String, default: 'goat'},
       price: {type: Number, default: 999999999 },
       direct: {type: Boolean, default: true},

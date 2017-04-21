@@ -36,7 +36,6 @@ function addUserRoutes(request, response, next){
 	console.log('received this username: ' + request.params.username);
 	//get user
 	db.User.findOne({ 'local.username' : request.params.username}, function(err, user){
-		console.log('USER ROUTES BEFORE: ' + user.routes);
 		getSSID(user, getIntlRoutes);
 
 	});//end find user
@@ -52,7 +51,7 @@ function getSSID(user, next){
 	 	user.skyscanner.PlaceId = results.Places[0].PlaceId;
 		user.skyscanner.PlaceName = results.Places[0].PlaceName;
 		user.skyscanner.CountryId = results.Places[0].CountryId;
-			user.skyscanner.RegionId = results.Places[0].RegionId;
+		user.skyscanner.RegionId = results.Places[0].RegionId;
 		user.skyscanner.CityId = results.Places[0].CityId;
 		user.skyscanner.CountryName = results.Places[0].CountryName;
 //console.log("2nd pass --- user's skyscanner profile: " + user.skyscanner);
@@ -73,7 +72,7 @@ console.log("using this generated ID for Int'l routes: " + user.skyscanner.Place
 
 //INTERNATINOAL ROUTES --------------------------------------------------------------------		 	
  	makeRequest("http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/US/USD/en-US/" + 
- 		user.skyscanner.PlaceId + "/anywhere/" + dates[0] + "/" + dates[0] + "?apiKey=" + 
+ 		user.skyscanner.PlaceId + "/anywhere/" + dates[0] + "/" + dates[1] + "?apiKey=" + 
  		apiKeys.ssAPI + '' , function(err, response, body){
 
 		var flights = JSON.parse(body);
@@ -86,7 +85,7 @@ console.log("using this generated ID for Int'l routes: " + user.skyscanner.Place
 console.log('number of international quotes: ' + flights.Quotes.length);
 		//store each flight in array newRoutes[]	
 		flights.Quotes.forEach(function(quote) {
-
+			console.log(quote);
 			var newRoute = {
 			price : quote.MinPrice,
 			destination : quote.OutboundLeg.DestinationId,
@@ -99,10 +98,12 @@ console.log('number of international quotes: ' + flights.Quotes.length);
 		});
 
 		//change newRoute names
-		newRoutes.forEach(function(newRoute){	
+		newRoutes.forEach(function(newRoute){
+
 			flights.Places.forEach(function(place){
 				if (newRoute.destination === place.PlaceId){
 					newRoute.destination = place.Name;
+					newRoute.countryCode = place.SkyscannerCode;
 					//setter function for newRoute.temp
 					function incomingTemp(temp){newRoute.temperature = temp;}
 					getRouteTemp(newRoute, incomingTemp);
@@ -121,7 +122,7 @@ console.log('number of international quotes: ' + flights.Quotes.length);
 			}
 		}, 500);
 		});
-	//user.save();
+
 	next(user);
  	});//end request for international flight data	
 }
@@ -132,7 +133,7 @@ console.log("USING these generated dates for Natinoal routes: " + dates[0] + ', 
 console.log("using this generated ID for National routes: " + user.skyscanner.PlaceId);
 
 	makeRequest("http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/US/USD/en-US/"+ 
- 		user.skyscanner.PlaceId + "/US/" + dates[0] + "/" + dates[0] + "?apiKey=" + 
+ 		user.skyscanner.PlaceId + "/US/" + dates[0] + "/" + dates[1] + "?apiKey=" + 
  		apiKeys.ssAPI + '' , function(err, response, body){
  		
  		var flights = JSON.parse(body);
@@ -160,6 +161,7 @@ console.log('number of national quotes: ' + flights.Quotes.length);
 			flights.Places.forEach(function(place){
 				if (newRoute.destination === place.PlaceId){
 					newRoute.destination = place.Name;
+					newRoute.countryCode = 'US';
 					//setter function for newRoute.temp
 					function incomingTemp(temp){newRoute.temperature = temp;}
 					getRouteTemp(newRoute, incomingTemp);
@@ -177,8 +179,6 @@ console.log('number of national quotes: ' + flights.Quotes.length);
 					clearInterval(interval);
 				}
 			}, 500);
-
-
 		});//end forEach
 	});
 }
@@ -189,7 +189,7 @@ function getRouteTemp(newRoute, incomingTemp){
 	//get destinations in readable api format
 	var destinationString = newRoute.destination.split(' ').join('+');
 	makeRequest('http://api.openweathermap.org/data/2.5/forecast/daily?q=' + destinationString +
-		 ',' + /* should insert country codes here */ '&units=imperial&cnt=' + /* days of weather needed */'3' + 
+		 ',' + newRoute.countryCode + '&units=imperial&cnt=' + /* days of weather needed */'3' + 
 		 '&apiKey=' + apiKeys.owmAPI, function(err, response, body){
 		 var total = 6;
 		 var fullTempData = JSON.parse(body);
@@ -234,7 +234,7 @@ function makeDates(){
 	//find return day, also check for end of month
 	var returnDay = departureDay + 2;
 //next weekend
-	returnDay += 7;
+	//returnDay += 7;
 	if (returnDay > daysInMonth) {returnDay -= daysInMonth; returnMonth++;}
 
 	if (departureDay < 10) {departureDay = '0' + String(departureDay);}
