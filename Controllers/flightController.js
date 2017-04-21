@@ -249,7 +249,7 @@ console.log('number of international quotes: ' + flights.Quotes.length);
 			flights.Places.forEach(function(place){
 				if (newRoute.destination === place.PlaceId){
 					newRoute.destination = place.Name;
-					getRouteTemp(place.Name, newRoute);
+					getRouteTemp(newRoute);
 				}
 			});
 			//store newRoute in user
@@ -282,7 +282,7 @@ console.log('number of national quotes: ' + flights.Quotes.length);
 			destination : quote.OutboundLeg.DestinationId,
 			inbound : quote.InboundLeg.DepartureDate,
 			direct : quote.Direct,
-			outbound : quote.OutboundLeg.DepartureDate
+			outbound : quote.OutboundLeg.DepartureDate,
 			//carrier???
 			};
 
@@ -294,29 +294,39 @@ console.log('number of national quotes: ' + flights.Quotes.length);
 			flights.Places.forEach(function(place){
 				if (newRoute.destination === place.PlaceId){
 					newRoute.destination = place.Name;
-					console.log('trying to find a temperature for: '+ place.Name);
-					getRouteTemp(place.Name, newRoute);
-					console.log('set a temperature of: '+ getRouteTemp(place.Name)+ ' for '+ place.Name);
+					//setter function for newRoute.temp
+					function incomingTemp(temp){newRoute.temperature = temp;}
+					getRouteTemp(newRoute, incomingTemp);
 				}
 
 			});
-		//storeNewRoute in user
-		user.routes.push(newRoute);
-		});
+			//checks if newRoute.temp is set, if it is, sets and saves the newRoute to user
+			var interval = setInterval(function(){
+				if (newRoute.temperature){
+					user.routes.push(newRoute);
+					if(user.routes.length === newRoutes.length){
+						user.save();
+					}
+					clearInterval(interval);
+				}
+			}, 500);
 
-		user.save();
+
+		});//end forEach
 	});
 }
 
-function getRouteTemp(destination, route){
+function getRouteTemp(newRoute, incomingTemp){
+	console.log('getting temp'+ newRoute.destination);
 	
 	//get destinations in readable api format
-	var destinationString = destination.split(' ').join('+');
+	var destinationString = newRoute.destination.split(' ').join('+');
 	makeRequest('http://api.openweathermap.org/data/2.5/forecast/daily?q=' + destinationString +
 		 ',' + /* should insert country codes here */ '&units=imperial&cnt=' + /* days of weather needed */'3' + 
 		 '&apiKey=' + apiKeys.owmAPI, function(err, response, body){
 		 var total = 6;
 		 var fullTempData = JSON.parse(body);
+		 console.log('response:' + fullTempData);
 
 //IMPLEMENT .MAP BELOW
 		 var temps = fullTempData.list;
@@ -328,10 +338,9 @@ function getRouteTemp(destination, route){
 		 	for(i=0; i < tempsArray.length; i ++){
 		 		total += tempsArray[i];
 		 	}
-
 		 	total = total/tempsArray.length;
-//console.log('average temp in ' + destination + '  is '+ total);	
-		return total;
+		  incomingTemp(total);
+
 		});//weather request
 }
 
