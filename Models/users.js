@@ -33,6 +33,9 @@ var UserSchema = mongoose.Schema({
       carrier: {type: String, default: 'goat'}, 
       temperature : {type: Number, default: 999}
     }
+  ],
+  dates: [
+    {type: String, default: 'goat'}
   ]
 });
 

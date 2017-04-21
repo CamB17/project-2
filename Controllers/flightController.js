@@ -129,6 +129,10 @@ console.log('number of international quotes: ' + flights.Quotes.length);
 
 function getNatlRoutes(user){
 	var dates = makeDates();
+	//TEMPORARILY SETTING USER DATES HERE, sloppy and need to separate
+	user.dates.push(dates[0]);
+	user.dates.push(dates[1]);
+
 console.log("USING these generated dates for Natinoal routes: " + dates[0] + ', ' + dates[1]);
 console.log("using this generated ID for National routes: " + user.skyscanner.PlaceId);
 
