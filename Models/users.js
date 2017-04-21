@@ -30,7 +30,7 @@ var UserSchema = mongoose.Schema({
       outbound: {type: String, default: 'goat'},
       inbound: {type: String, default: 'goat'},
       carrier: {type: String, default: 'goat'}, 
-      tempurature : {type: Number, defualt: 999}
+      tempurature : {type: Number, default: 999}
     }
   ]
 });

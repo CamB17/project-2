@@ -5,6 +5,7 @@ var express = require('express'),
 
 var mainController = require('../Controllers/mainController');
 var usersController = require('../Controllers/usersController');
+var flightController = require('../Controllers/flightController');
 
 
 //verify user
@@ -30,9 +31,9 @@ router.route('/home/getUser')
 	.get(usersController.userInfo);
 
 router.route('/home/location/:username')
-	.post(usersController.addUserLocation);
+	.post(flightController.addUserLocation);
 router.route('/home/routes/:username')
-	.get(usersController.addUserRoutes);
+	.get(flightController.addUserRoutes);
 //location
 //router.route('/location')
 	//.post(testController.getAirport);
