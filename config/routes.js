@@ -34,9 +34,8 @@ router.route('/home/location/:username')
 	.post(flightController.addUserLocation);
 router.route('/home/routes/:username')
 	.get(flightController.addUserRoutes);
-//location
-//router.route('/location')
-	//.post(testController.getAirport);
+router.route('/home/results/:username')
+	.get(mainController.results);
 
 //login
 router.route('/login')

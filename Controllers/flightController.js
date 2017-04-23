@@ -21,13 +21,17 @@ function addUserLocation(request, response, next){
 
 
 		makeRequest("http://api.openweathermap.org/data/2.5/forecast/daily?zip="+user.location.postal+
-			","+user.location.country+"&units=imperial&cnt=10&appid="+apiKeys.owmAPI+'', function(err, response, body){
-				var weather = JSON.parse(body);
-				//console.log(weather);
+			","+user.location.country+"&units=imperial&cnt=1&appid="+apiKeys.owmAPI+'', function(err, response, body){
+				var weather = JSON.parse(response.body);
+				//console.log('WEATHER IS:    \n\n\n\n\n\n'+ weather.list[0].temp.day);
+				//console.log('temp before: '+user.location.temperature);
+			user.location.temperature = weather.list[0].temp.day;
+			//console.log('temp after: '+ user.location.temperature);
 
+			user.save();
 		});
 
-		user.save();
+		//user.save();
 		response.json(user.location);
 	});
 }	
@@ -37,15 +41,14 @@ function addUserRoutes(request, response, next){
 	//get user
 	db.User.findOne({ 'local.username' : request.params.username}, function(err, user){
 		getSSID(user, getIntlRoutes);
-
 	});//end find user
+	response.json({'message': 'done'});
 }//end route
 
 //---------------------------NON-ROUTE FUNCITONS BELOW-----------------
 function getSSID(user, next){
 	makeRequest("http://partners.api.skyscanner.net/apiservices/autosuggest/v1.0/US/USD/en-US/?query=" +
 		 user.location.city +"&apiKey="+ apiKeys.ssAPI + '' , function(err, response, body){
-		 	
 		 var results = JSON.parse(response.body);
 
 	 	user.skyscanner.PlaceId = results.Places[0].PlaceId;
@@ -85,7 +88,7 @@ console.log("using this generated ID for Int'l routes: " + user.skyscanner.Place
 console.log('number of international quotes: ' + flights.Quotes.length);
 		//store each flight in array newRoutes[]	
 		flights.Quotes.forEach(function(quote) {
-			console.log(quote);
+			//console.log(quote);
 			var newRoute = {
 			price : quote.MinPrice,
 			destination : quote.OutboundLeg.DestinationId,
@@ -113,7 +116,7 @@ console.log('number of international quotes: ' + flights.Quotes.length);
 		//checks if newRoute.temp is set, if it is, sets and saves the newRoute to user
 		var interval = setInterval(function(){
 			if (newRoute.temperature){
-				console.log("Set Temp for Int'l route: " + newRoute.destination + ": "+ newRoute.temperature );
+				//console.log("Set Temp for Int'l route: " + newRoute.destination + ": "+ newRoute.temperature );
 				user.routes.push(newRoute);
 				if(user.routes.length === newRoutes.length){
 					user.save();
@@ -176,7 +179,7 @@ console.log('number of national quotes: ' + flights.Quotes.length);
 			var interval = setInterval(function(){
 				if (newRoute.temperature){
 					user.routes.push(newRoute);
-					console.log("Set Temp for National route: " + newRoute.destination + ": "+ newRoute.temperature );
+					//console.log("Set Temp for National route: " + newRoute.destination + ": "+ newRoute.temperature );
 					if(user.routes.length === newRoutes.length){
 						user.save();
 					}
@@ -234,7 +237,7 @@ function makeDates(){
 		d.getMonth() === 10) {daysInMonth = 30;}
 	if (d.getMonth() === 1 && d.getYear() % 4 === 0) {daysInMonth = 29;}
 	//figure out if friday is next month, if it is, subtract days in current month
-	if (departureDay > daysInMonth){departureDay -= daysInMonth; departureMonth++;}
+	if (departureDay > daysInMonth){departureDay -= daysInMonth; departureMonth++; returnMonth++;}
 	//find return day, also check for end of month
 	var returnDay = departureDay + 2;
 //next weekend

@@ -53,11 +53,15 @@ $(document).ready(function(){
 
   			//get server to request routes and save to user
   			$.get('/home/routes/' + username, function(response){
-
+	
   			});
+
+  			// $.get('home/results/'+ username , function(response){
+  			// 	// var test = json.parse(response.body);
+  			// 	// console.log('found some stuff: ' + test);
+  			// });
   		});
   	});
-
 
 
 

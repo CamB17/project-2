@@ -12,7 +12,7 @@ var UserSchema = mongoose.Schema({
   	region : { type: String, default: 'goat' },
   	postal : { type: Number, default: 999999 },
   	loc : { type: String, default: 'goat,goat' }, //lat and long formatted "XXXXX,XXXXX"
-    tempurature: {type: Number, default: 0}
+    temperature: {type: Number, default: 0}
   },
   skyscanner : {
     PlaceId : { type: String, default: 'goat' },
